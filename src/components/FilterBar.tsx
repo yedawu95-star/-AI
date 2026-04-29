@@ -11,8 +11,8 @@ export type FilterState = {
   kidsOnly: boolean
 }
 
-const SOURCES = ['롯데백화점', '현대백화점', '신세계백화점', '롯데아울렛', '사이먼아울렛', '현대아울렛']
-const CHANNELS = ['백화점', '아울렛', '플랫폼']
+const SOURCES = ['롯데백화점', '현대백화점', '신세계백화점', '롯데아울렛', '사이먼아울렛', '현대아울렛', '어패럴뉴스', '패션비즈', '네이버뉴스']
+const CHANNELS = ['백화점', '아울렛', '플랫폼', '패션미디어']
 
 type Props = {
   filters: FilterState
@@ -31,6 +31,9 @@ export default function FilterBar({ filters, onChange, activeTab }: Props) {
       dateTo: filters.dateTo,
       ...(filters.kidsOnly ? { kidsOnly: 'true' } : {}),
     })
+
+    if (filters.sources.length > 0) params.set('sources', filters.sources.join(','))
+    if (filters.channels.length === 1) params.set('channel', filters.channels[0])
 
     if (activeTab === 'news') {
       const res = await fetch(`/api/news?${params}&limit=1000`)

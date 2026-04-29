@@ -4,6 +4,7 @@ import { collectRss } from '@/lib/collectors/rss'
 import { collectNaverProducts } from '@/lib/collectors/naver-products'
 import { collectNaverKeywords } from '@/lib/collectors/naver-keywords'
 import { collectPlatformProducts } from '@/lib/collectors/naver-platform-products'
+import { collectRssFashion } from '@/lib/collectors/rss-fashion'
 
 export const maxDuration = 300
 
@@ -22,7 +23,10 @@ export async function POST() {
   // 3. 키워드 트렌드
   await run(results, 'keywords', () => collectNaverKeywords(db))
 
-  // 4. 플랫폼별 상품 (네이버 쇼핑 API 기반)
+  // 4. 패션 전문지 RSS (어패럴뉴스·패션비즈·네이버뉴스)
+  await run(results, 'rss_fashion', () => collectRssFashion(db))
+
+  // 5. 플랫폼별 상품 (네이버 쇼핑 API 기반)
   await run(results, '29cm', () => collectPlatformProducts(db, '29cm'))
   await run(results, 'kidikidi', () => collectPlatformProducts(db, 'kidikidi'))
   await run(results, 'musinsa', () => collectPlatformProducts(db, 'musinsa'))

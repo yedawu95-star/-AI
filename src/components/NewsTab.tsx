@@ -21,7 +21,8 @@ export default function NewsTab({ filters }: Props) {
       dateTo: filters.dateTo,
       page: String(p),
       ...(filters.kidsOnly ? { kidsOnly: 'true' } : {}),
-      ...(filters.sources.length === 1 ? { source: filters.sources[0] } : {}),
+      ...(filters.sources.length > 0 ? { sources: filters.sources.join(',') } : {}),
+      ...(filters.channels.length === 1 ? { channel: filters.channels[0] } : {}),
     })
     const res = await fetch(`/api/news?${params}`)
     const json = await res.json() as { data: NewsArticle[]; count: number }
