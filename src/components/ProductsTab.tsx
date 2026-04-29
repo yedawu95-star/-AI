@@ -8,16 +8,16 @@ import Image from 'next/image'
 type Props = { filters: FilterState }
 
 const PLATFORMS = [
-  { id: 'naver', label: '네이버쇼핑', color: '#03C75A' },
-  { id: '29cm', label: '29CM', color: '#1a1a1a' },
-  { id: 'kidikidi', label: '키디키디', color: '#FF6B6B' },
-  { id: 'musinsa', label: '무신사 키즈', color: '#6B47D4' },
+  { id: 'naver_kids', label: '네이버쇼핑', color: '#03C75A', desc: '출산/유아동 판매순 TOP 30' },
+  { id: '29cm', label: '29CM 키즈', color: '#1a1a1a', desc: 'ALL 판매순 TOP 30' },
+  { id: 'kidikidi', label: '키디키디', color: '#FF6B6B', desc: '베스트 랭킹 TOP 30' },
+  { id: 'musinsa', label: '무신사스탠다드', color: '#6B47D4', desc: 'KIDS 카테고리 랭킹 TOP 30' },
 ] as const
 
 type PlatformId = (typeof PLATFORMS)[number]['id']
 
 export default function ProductsTab({ filters }: Props) {
-  const [platform, setPlatform] = useState<PlatformId>('naver')
+  const [platform, setPlatform] = useState<PlatformId>('naver_kids')
   const [products, setProducts] = useState<PlatformProduct[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -54,17 +54,17 @@ export default function ProductsTab({ filters }: Props) {
           <button
             key={p.id}
             onClick={() => setPlatform(p.id)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+            className={`flex flex-col items-start gap-0.5 px-3 py-2 rounded-xl text-xs font-medium border transition-all ${
               platform === p.id
-                ? 'bg-white border-[#e8edf2] shadow-sm text-[#1a2a3a]'
-                : 'text-[#6a8098] border-transparent hover:border-[#e8edf2]'
+                ? 'bg-white/80 border-white shadow-sm text-[#1a2a3a]'
+                : 'text-[#6a8098] border-white/40 hover:border-white/70 hover:bg-white/40'
             }`}
           >
-            <span
-              className="w-2 h-2 rounded-full"
-              style={{ background: p.color }}
-            />
-            {p.label}
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full shrink-0" style={{ background: p.color }} />
+              <span className="font-semibold">{p.label}</span>
+            </div>
+            <span className="text-[10px] text-[#9ab4cc] pl-3.5">{p.desc}</span>
           </button>
         ))}
       </div>
@@ -159,13 +159,9 @@ export default function ProductsTab({ filters }: Props) {
         )}
       </div>
 
-      {/* 29CM · 키디키디 · 무신사 키즈 수집 안내 */}
-      {platform !== 'naver' && (
-        <div className="mt-3 p-3 bg-[#FFFAF0] border border-[#f0d890] rounded-lg text-xs text-[#9a7a10] leading-relaxed">
-          <strong>Playwright 크롤러:</strong> {PLATFORMS.find(p2 => p2.id === platform)?.label} 데이터는 서버에서 1일 1회 수집됩니다.
-          내부 업무용으로만 사용하고 외부 공개·재배포는 금지합니다.
-        </div>
-      )}
+      <div className="mt-3 p-3 glass rounded-xl text-xs text-[#6a8098] leading-relaxed">
+        {PLATFORMS.find(p2 => p2.id === platform)?.label} · {PLATFORMS.find(p2 => p2.id === platform)?.desc} · 매일 AM 7:30 자동 수집 · 내부 업무용
+      </div>
     </div>
   )
 }

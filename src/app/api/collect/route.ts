@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase'
 import { collectRss } from '@/lib/collectors/rss'
-import { collectNaverProducts } from '@/lib/collectors/naver-products'
 import { collectNaverKeywords } from '@/lib/collectors/naver-keywords'
 import { collectPlatformProducts } from '@/lib/collectors/naver-platform-products'
 import { collectRssFashion } from '@/lib/collectors/rss-fashion'
@@ -17,8 +16,8 @@ export async function POST() {
   // 1. RSS 뉴스
   await run(results, 'rss', () => collectRss(db))
 
-  // 2. 네이버쇼핑 상품
-  await run(results, 'naver_products', () => collectNaverProducts(db))
+  // 2. 네이버쇼핑 출산/유아동 판매순 TOP 30
+  await run(results, 'naver_kids', () => collectPlatformProducts(db, 'naver_kids'))
 
   // 3. 키워드 트렌드
   await run(results, 'keywords', () => collectNaverKeywords(db))
@@ -26,10 +25,10 @@ export async function POST() {
   // 4. 패션 전문지 RSS (어패럴뉴스·패션비즈·네이버뉴스)
   await run(results, 'rss_fashion', () => collectRssFashion(db))
 
-  // 5. 플랫폼별 상품 (네이버 쇼핑 API 기반)
-  await run(results, '29cm', () => collectPlatformProducts(db, '29cm'))
-  await run(results, 'kidikidi', () => collectPlatformProducts(db, 'kidikidi'))
-  await run(results, 'musinsa', () => collectPlatformProducts(db, 'musinsa'))
+  // 5. 플랫폼별 상품
+  await run(results, '29cm', () => collectPlatformProducts(db, '29cm'))       // 29CM 키즈 ALL 판매순
+  await run(results, 'kidikidi', () => collectPlatformProducts(db, 'kidikidi'))  // 키디키디 베스트 랭킹
+  await run(results, 'musinsa', () => collectPlatformProducts(db, 'musinsa'))    // 무신사스탠다드 KIDS
 
   // 크롤 로그 기록
   for (const [name, r] of Object.entries(results)) {

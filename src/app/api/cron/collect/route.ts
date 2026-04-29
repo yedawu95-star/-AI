@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase'
 import { collectRss } from '@/lib/collectors/rss'
-import { collectNaverProducts } from '@/lib/collectors/naver-products'
 import { collectNaverKeywords } from '@/lib/collectors/naver-keywords'
 import { collectPlatformProducts } from '@/lib/collectors/naver-platform-products'
 import { collectRssFashion } from '@/lib/collectors/rss-fashion'
@@ -30,7 +29,7 @@ export async function GET(req: NextRequest) {
   }
 
   await run('rss', () => collectRss(db))
-  await run('naver_products', () => collectNaverProducts(db))
+  await run('naver_kids', () => collectPlatformProducts(db, 'naver_kids'))
   await run('keywords', () => collectNaverKeywords(db))
   await run('rss_fashion', () => collectRssFashion(db))
   await run('29cm', () => collectPlatformProducts(db, '29cm'))
