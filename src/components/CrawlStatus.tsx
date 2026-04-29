@@ -5,7 +5,9 @@ import { CrawlLog } from '@/lib/supabase'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
 
-export default function CrawlStatus() {
+type Props = { sidebar?: boolean }
+
+export default function CrawlStatus({ sidebar }: Props) {
   const [logs, setLogs] = useState<CrawlLog[]>([])
   const [open, setOpen] = useState(false)
   const [triggering, setTriggering] = useState(false)
@@ -30,36 +32,58 @@ export default function CrawlStatus() {
     }
   }
 
+  const statusColor =
+    latestLog?.status === 'success' ? 'bg-emerald-400' :
+    latestLog?.status === 'error' ? 'bg-rose-400' : 'bg-amber-400'
+
+  // 사이드바 미니 버전
+  if (sidebar) {
+    return (
+      <div className="glass rounded-xl p-3">
+        <div className="flex items-center gap-2 mb-2">
+          <div className={`w-2 h-2 rounded-full ${statusColor} shrink-0`} />
+          <p className="text-[11px] font-semibold text-[#3a5a7a] truncate">데이터 수집</p>
+        </div>
+        {latestLog && (
+          <p className="text-[10px] text-[#6a8098] mb-2 leading-relaxed">
+            {format(new Date(latestLog.run_at), 'M.d HH:mm', { locale: ko })}
+            <br />{latestLog.items_collected}건 수집
+          </p>
+        )}
+        <button
+          onClick={triggerCollect}
+          disabled={triggering}
+          className="w-full text-[11px] py-1.5 rounded-lg bg-white/50 text-[#3a6a9a] font-medium hover:bg-white/70 disabled:opacity-50 transition-colors border border-white/60"
+        >
+          {triggering ? '수집 중...' : '지금 수집'}
+        </button>
+      </div>
+    )
+  }
+
+  // 기본 버전 (사용 안함)
   return (
     <div className="mt-6 card p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div
-            className={`w-2 h-2 rounded-full ${
-              latestLog?.status === 'success' ? 'bg-[#3ae8a0]' :
-              latestLog?.status === 'error' ? 'bg-[#e85a70]' : 'bg-[#e8c870]'
-            }`}
-          />
+          <div className={`w-2 h-2 rounded-full ${statusColor}`} />
           <div>
             <p className="text-xs font-medium text-[#1a2a3a]">
               데이터 수집 상태
-              <span className="ml-2 text-[#6a8098] font-normal">
-                매일 AM 7:30 자동 실행
-              </span>
+              <span className="ml-2 text-[#6a8098] font-normal">매일 AM 7:30 자동 실행</span>
             </p>
             {latestLog && (
               <p className="text-xs text-[#6a8098] mt-0.5">
                 마지막 수집:{' '}
                 {format(new Date(latestLog.run_at), 'M.d HH:mm', { locale: ko })} ·{' '}
-                {latestLog.items_collected}건 수집 · {latestLog.job_name}
+                {latestLog.items_collected}건 · {latestLog.job_name}
                 {latestLog.status === 'error' && (
-                  <span className="ml-1 text-[#e85a70]">오류: {latestLog.error_msg}</span>
+                  <span className="ml-1 text-rose-500">오류: {latestLog.error_msg}</span>
                 )}
               </p>
             )}
           </div>
         </div>
-
         <div className="flex items-center gap-2">
           <button
             onClick={triggerCollect}
@@ -68,17 +92,14 @@ export default function CrawlStatus() {
           >
             {triggering ? '수집 중...' : '지금 수집'}
           </button>
-          <button
-            onClick={() => setOpen(!open)}
-            className="text-xs text-[#6a8098] hover:text-[#1a2a3a]"
-          >
+          <button onClick={() => setOpen(!open)} className="text-xs text-[#6a8098] hover:text-[#1a2a3a]">
             {open ? '닫기' : '이력 보기'}
           </button>
         </div>
       </div>
 
       {open && logs.length > 0 && (
-        <div className="mt-3 border-t border-[#e8edf2] pt-3">
+        <div className="mt-3 border-t border-white/50 pt-3">
           <table className="w-full text-xs">
             <thead>
               <tr className="text-[#6a8098]">
@@ -90,13 +111,13 @@ export default function CrawlStatus() {
             </thead>
             <tbody>
               {logs.map(log => (
-                <tr key={log.id} className="border-t border-[#f0f4f8]">
+                <tr key={log.id} className="border-t border-white/30">
                   <td className="py-1.5 text-[#1a2a3a]">{log.job_name}</td>
                   <td className="py-1.5">
                     <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
-                      log.status === 'success' ? 'bg-[#C8F0E8] text-[#1a6a4a]' :
-                      log.status === 'error' ? 'bg-[#F9D0E0] text-[#9a3a5a]' :
-                      'bg-[#FFF0C8] text-[#7a5a10]'
+                      log.status === 'success' ? 'bg-emerald-100 text-emerald-700' :
+                      log.status === 'error' ? 'bg-rose-100 text-rose-700' :
+                      'bg-amber-100 text-amber-700'
                     }`}>
                       {log.status === 'success' ? '성공' : log.status === 'error' ? '오류' : '부분'}
                     </span>

@@ -61,7 +61,7 @@ export default function FilterBar({ filters, onChange, activeTab }: Props) {
   }
 
   return (
-    <div className="bg-white border border-[#e8edf2] rounded-xl p-4 mb-4">
+    <div className="glass rounded-xl p-4 mb-4">
       <div className="flex flex-wrap gap-4 items-end">
         {/* 날짜 범위 */}
         <div className="flex items-center gap-2">
