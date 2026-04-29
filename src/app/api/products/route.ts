@@ -4,7 +4,7 @@ import { Database } from '@/lib/supabase'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
-  const platform = searchParams.get('platform') ?? 'naver'
+  const platform = searchParams.get('platform') ?? 'naver_kids'
   const dateFrom = searchParams.get('dateFrom')
   const dateTo = searchParams.get('dateTo')
 
