@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+
+:root {
+  --bg: #f7f9fc;
+  --card: #ffffff;
+  --border: #e8edf2;
+  --text-primary: #1a2a3a;
+  --text-secondary: #6a8098;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.pill-kids {
+  background: #C8F0E8;
+  color: #1a6a4a;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-weight: 600;
+}
+
+.pill-source {
+  background: #EBF5FE;
+  color: #2a6a9a;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 99px;
+}
+
+.tab-active {
+  background: #ffffff;
+  color: #1a2a3a;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.tab-inactive {
+  color: #6a8098;
+}
+
+input[type="date"] {
+  font-family: inherit;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c8d8e8; border-radius: 3px; }
