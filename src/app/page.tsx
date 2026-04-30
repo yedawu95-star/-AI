@@ -65,8 +65,8 @@ export default function Home() {
     dateFrom: format(subDays(new Date(), 7), 'yyyy-MM-dd'),
     dateTo: format(new Date(), 'yyyy-MM-dd'),
     sources: [],
-    channels: [],
     kidsOnly: false,
+    casualOnly: false,
   })
 
   const currentTab = TABS.find(t => t.id === activeTab)!

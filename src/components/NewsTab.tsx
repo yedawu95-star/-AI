@@ -31,6 +31,7 @@ export default function NewsTab({ filters }: Props) {
       dateTo: filters.dateTo,
       page: String(p),
       ...(filters.kidsOnly ? { kidsOnly: 'true' } : {}),
+      ...(filters.casualOnly ? { casualOnly: 'true' } : {}),
       ...(tabSources.length > 0 ? { sources: tabSources.join(',') } : {}),
     })
     const res = await fetch(`/api/news?${params}`)

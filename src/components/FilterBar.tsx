@@ -7,12 +7,11 @@ export type FilterState = {
   dateFrom: string
   dateTo: string
   sources: string[]
-  channels: string[]
   kidsOnly: boolean
+  casualOnly: boolean
 }
 
 const SOURCES = ['롯데백화점', '현대백화점', '신세계백화점', '롯데아울렛', '사이먼아울렛', '현대아울렛', '어패럴뉴스', '패션비즈', '네이버뉴스']
-const CHANNELS = ['백화점', '아울렛', '플랫폼', '패션미디어']
 
 type Props = {
   filters: FilterState
@@ -30,10 +29,8 @@ export default function FilterBar({ filters, onChange, activeTab }: Props) {
       dateFrom: filters.dateFrom,
       dateTo: filters.dateTo,
       ...(filters.kidsOnly ? { kidsOnly: 'true' } : {}),
+      ...(filters.sources.length > 0 ? { sources: filters.sources.join(',') } : {}),
     })
-
-    if (filters.sources.length > 0) params.set('sources', filters.sources.join(','))
-    if (filters.channels.length === 1) params.set('channel', filters.channels[0])
 
     if (activeTab === 'news') {
       const res = await fetch(`/api/news?${params}&limit=1000`)
@@ -62,7 +59,7 @@ export default function FilterBar({ filters, onChange, activeTab }: Props) {
 
   return (
     <div className="glass rounded-xl p-4 mb-4">
-      <div className="flex flex-wrap gap-4 items-end">
+      <div className="flex flex-wrap gap-4 items-center">
         {/* 날짜 범위 */}
         <div className="flex items-center gap-2">
           <label className="text-xs text-[#6a8098] font-medium whitespace-nowrap">날짜 범위</label>
@@ -70,14 +67,14 @@ export default function FilterBar({ filters, onChange, activeTab }: Props) {
             type="date"
             value={filters.dateFrom}
             onChange={e => onChange({ ...filters, dateFrom: e.target.value })}
-            className="text-sm border border-[#e8edf2] rounded-lg px-3 py-1.5 text-[#1a2a3a] bg-[#f7f9fc] focus:outline-none focus:border-[#B8E4F9]"
+            className="text-sm border border-[#e8edf2] rounded-lg px-3 py-1.5 text-[#1a2a3a] bg-white/60 focus:outline-none focus:border-[#B8E4F9]"
           />
           <span className="text-[#6a8098] text-sm">~</span>
           <input
             type="date"
             value={filters.dateTo}
             onChange={e => onChange({ ...filters, dateTo: e.target.value })}
-            className="text-sm border border-[#e8edf2] rounded-lg px-3 py-1.5 text-[#1a2a3a] bg-[#f7f9fc] focus:outline-none focus:border-[#B8E4F9]"
+            className="text-sm border border-[#e8edf2] rounded-lg px-3 py-1.5 text-[#1a2a3a] bg-white/60 focus:outline-none focus:border-[#B8E4F9]"
           />
         </div>
 
@@ -91,7 +88,7 @@ export default function FilterBar({ filters, onChange, activeTab }: Props) {
               className={`text-xs px-2.5 py-1 rounded-full border transition-all ${
                 filters.sources.includes(s)
                   ? 'bg-[#B8E4F9] text-[#2a6a9a] border-[#8acae8]'
-                  : 'bg-white text-[#6a8098] border-[#e8edf2] hover:border-[#B8E4F9]'
+                  : 'bg-white/60 text-[#6a8098] border-[#e8edf2] hover:border-[#B8E4F9]'
               }`}
             >
               {s}
@@ -99,39 +96,32 @@ export default function FilterBar({ filters, onChange, activeTab }: Props) {
           ))}
         </div>
 
-        {/* 채널 필터 */}
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs text-[#6a8098] font-medium">채널</span>
-          {CHANNELS.map(c => (
-            <button
-              key={c}
-              onClick={() => onChange({ ...filters, channels: toggle(filters.channels, c) })}
-              className={`text-xs px-2.5 py-1 rounded-full border transition-all ${
-                filters.channels.includes(c)
-                  ? 'bg-[#F9C8DA] text-[#9a3a5a] border-[#f0a0c0]'
-                  : 'bg-white text-[#6a8098] border-[#e8edf2] hover:border-[#F9C8DA]'
-              }`}
-            >
-              {c}
-            </button>
-          ))}
+        {/* 체크박스 필터 */}
+        <div className="flex items-center gap-4">
+          <label className="flex items-center gap-1.5 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={filters.kidsOnly}
+              onChange={e => onChange({ ...filters, kidsOnly: e.target.checked })}
+              className="w-3.5 h-3.5 rounded accent-[#2a6a9a]"
+            />
+            <span className="text-xs text-[#6a8098] font-medium">아동</span>
+          </label>
+          <label className="flex items-center gap-1.5 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={filters.casualOnly}
+              onChange={e => onChange({ ...filters, casualOnly: e.target.checked })}
+              className="w-3.5 h-3.5 rounded accent-[#2a6a9a]"
+            />
+            <span className="text-xs text-[#6a8098] font-medium">캐주얼</span>
+          </label>
         </div>
-
-        {/* 아동 관련만 */}
-        <label className="flex items-center gap-1.5 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={filters.kidsOnly}
-            onChange={e => onChange({ ...filters, kidsOnly: e.target.checked })}
-            className="rounded"
-          />
-          <span className="text-xs text-[#6a8098]">아동 관련만</span>
-        </label>
 
         {/* CSV 다운로드 */}
         <button
           onClick={handleCsvDownload}
-          className="ml-auto flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 bg-[#f0f7ff] text-[#2a6a9a] border border-[#aad4f0] rounded-lg hover:bg-[#e0f0ff] transition-colors"
+          className="ml-auto flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 bg-white/60 text-[#2a6a9a] border border-[#aad4f0] rounded-lg hover:bg-white/80 transition-colors"
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
