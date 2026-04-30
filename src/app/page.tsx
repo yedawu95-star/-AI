@@ -158,10 +158,6 @@ export default function Home() {
                 롯데·현대·신세계 유통사 이슈 · 29CM·키디키디·무신사 키즈 베스트 · 네이버 키워드 트렌드
               </p>
             </div>
-            <div className="text-right shrink-0 ml-6">
-              <p className="text-xs text-[#9ab4cc]">자동 수집</p>
-              <p className="text-sm font-semibold text-[#1a2a3a]">매일 AM 7:30</p>
-            </div>
           </div>
         </div>
 

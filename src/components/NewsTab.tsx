@@ -8,21 +8,30 @@ import { ko } from 'date-fns/locale'
 
 type Props = { filters: FilterState }
 
+const SOURCE_TABS = [
+  { id: 'all',   label: '전체',    sources: [] as string[] },
+  { id: 'dept',  label: '백화점',  sources: ['롯데백화점', '현대백화점', '신세계백화점'] },
+  { id: 'fashion', label: '패션미디어', sources: ['어패럴뉴스', '패션비즈', '네이버뉴스'] },
+] as const
+
+type SourceTabId = (typeof SOURCE_TABS)[number]['id']
+
 export default function NewsTab({ filters }: Props) {
   const [articles, setArticles] = useState<NewsArticle[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(false)
+  const [sourceTab, setSourceTab] = useState<SourceTabId>('all')
 
-  const fetchNews = useCallback(async (p: number) => {
+  const fetchNews = useCallback(async (p: number, tab: SourceTabId) => {
     setLoading(true)
+    const tabSources = SOURCE_TABS.find(t => t.id === tab)?.sources ?? []
     const params = new URLSearchParams({
       dateFrom: filters.dateFrom,
       dateTo: filters.dateTo,
       page: String(p),
       ...(filters.kidsOnly ? { kidsOnly: 'true' } : {}),
-      ...(filters.sources.length > 0 ? { sources: filters.sources.join(',') } : {}),
-      ...(filters.channels.length === 1 ? { channel: filters.channels[0] } : {}),
+      ...(tabSources.length > 0 ? { sources: tabSources.join(',') } : {}),
     })
     const res = await fetch(`/api/news?${params}`)
     const json = await res.json() as { data: NewsArticle[]; count: number }
@@ -33,23 +42,36 @@ export default function NewsTab({ filters }: Props) {
 
   useEffect(() => {
     setPage(1)
-    fetchNews(1)
-  }, [filters, fetchNews])
+    fetchNews(1, sourceTab)
+  }, [filters, sourceTab, fetchNews])
 
   const totalPages = Math.ceil(total / 20)
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-3">
-        <p className="text-xs text-[#6a8098]">
+      {/* 소스별 필터 탭 */}
+      <div className="flex gap-2 mb-4">
+        {SOURCE_TABS.map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => { setSourceTab(tab.id); setPage(1) }}
+            className={`px-4 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+              sourceTab === tab.id
+                ? 'bg-white/80 border-white shadow-sm text-[#1a2a3a]'
+                : 'text-[#6a8098] border-white/40 hover:border-white/70 hover:bg-white/40'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+        <span className="ml-auto text-xs text-[#9ab4cc] self-center">
           총 <strong className="text-[#1a2a3a]">{total.toLocaleString()}</strong>건
-          {filters.kidsOnly && (
-            <span className="ml-2 pill-kids">아동 관련만</span>
-          )}
-        </p>
-        {loading && <span className="text-xs text-[#6a8098]">로딩 중...</span>}
+          {loading && ' · 로딩 중...'}
+          {filters.kidsOnly && <span className="ml-2 pill-kids">아동 관련만</span>}
+        </span>
       </div>
 
+      {/* 기사 목록 */}
       <div className="space-y-3">
         {articles.length === 0 && !loading && (
           <div className="card p-12 text-center text-[#6a8098] text-sm">
@@ -123,17 +145,17 @@ export default function NewsTab({ filters }: Props) {
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 mt-5">
           <button
-            onClick={() => { const p = page - 1; setPage(p); fetchNews(p) }}
+            onClick={() => { const p = page - 1; setPage(p); fetchNews(p, sourceTab) }}
             disabled={page === 1}
-            className="text-xs px-3 py-1.5 border border-[#e8edf2] rounded-lg disabled:opacity-40 hover:bg-gray-50"
+            className="text-xs px-3 py-1.5 border border-white/50 rounded-lg disabled:opacity-40 hover:bg-white/40"
           >
             이전
           </button>
           <span className="text-xs text-[#6a8098]">{page} / {totalPages}</span>
           <button
-            onClick={() => { const p = page + 1; setPage(p); fetchNews(p) }}
+            onClick={() => { const p = page + 1; setPage(p); fetchNews(p, sourceTab) }}
             disabled={page === totalPages}
-            className="text-xs px-3 py-1.5 border border-[#e8edf2] rounded-lg disabled:opacity-40 hover:bg-gray-50"
+            className="text-xs px-3 py-1.5 border border-white/50 rounded-lg disabled:opacity-40 hover:bg-white/40"
           >
             다음
           </button>

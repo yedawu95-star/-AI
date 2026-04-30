@@ -27,7 +27,6 @@ export async function GET(req: NextRequest) {
   let query = db
     .from('news_articles')
     .select('*', { count: 'exact' })
-    .order('is_kids', { ascending: false })
     .order('published_at', { ascending: false })
     .range((page - 1) * limit, page * limit - 1)
 

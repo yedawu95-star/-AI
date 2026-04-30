@@ -40,14 +40,15 @@ export default function CrawlStatus({ sidebar }: Props) {
   if (sidebar) {
     return (
       <div className="glass rounded-xl p-3">
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center gap-2 mb-1.5">
           <div className={`w-2 h-2 rounded-full ${statusColor} shrink-0`} />
-          <p className="text-[11px] font-semibold text-[#3a5a7a] truncate">데이터 수집</p>
+          <p className="text-[11px] font-semibold text-[#3a5a7a]">데이터 수집</p>
         </div>
+        <p className="text-[10px] text-[#9ab4cc] mb-1">매일 AM 8:10 자동 수집</p>
         {latestLog && (
           <p className="text-[10px] text-[#6a8098] mb-2 leading-relaxed">
-            {format(new Date(latestLog.run_at), 'M.d HH:mm', { locale: ko })}
-            <br />{latestLog.items_collected}건 수집
+            최근: {format(new Date(latestLog.run_at), 'M.d HH:mm', { locale: ko })}
+            {' '}· {latestLog.items_collected}건
           </p>
         )}
         <button
